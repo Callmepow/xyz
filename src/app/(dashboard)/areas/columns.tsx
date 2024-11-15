@@ -1,0 +1,86 @@
+"use client";
+
+import { AreaModal } from "@/components/area/area-modal";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { deleteArea } from "@/lib/actions";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { revalidatePath } from "next/cache";
+import { useEffect, useState } from "react";
+
+export type Area = {
+  id: number;
+  name: string;
+  createdAt: Date;
+  updateAt: Date;
+};
+
+export const columns: ColumnDef<Area>[] = [
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const area = row.original;
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [menuOpen, setMenuOpen] = useState(false);
+
+      const handleEdit = () => {
+        setMenuOpen(false); // Tutup menu dropdown sebelum modal dibuka
+        setIsModalOpen(true);
+      };
+
+      const handleDelete = async () => {
+        await deleteArea(area.id);
+        setMenuOpen(false); // Tutup menu setelah delete
+      };
+
+      useEffect(() => {
+        if (!isModalOpen) {
+          setIsModalOpen(false);
+        }
+      }, [isModalOpen]);
+
+      return (
+        <div className="flex justify-end">
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={handleEdit}>Edit Area</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete}>Delete Area</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* Modal Edit */}
+          <AreaModal
+            area={area}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </div>
+      );
+    },
+  },
+];

@@ -5,7 +5,14 @@ import {
   Bookmark,
   SquarePen,
   LayoutGrid,
-  LucideIcon
+  LucideIcon,
+  Map,
+  Building,
+  BriefcaseBusiness,
+  UserSquareIcon,
+  UserCheck,
+  LucideUser,
+  SquareUserRound
 } from "lucide-react";
 
 type Submenu = {
@@ -59,15 +66,26 @@ export function getMenuList(pathname: string): Group[] {
           ]
         },
         {
-          href: "/categories",
-          label: "Categories",
-          icon: Bookmark
+          href: "/areas",
+          label: "Areas",
+          icon: Map
         },
         {
-          href: "/tags",
-          label: "Tags",
-          icon: Tag
-        }
+          href: "/branches",
+          label: "Branches",
+          icon: Building
+        },
+        {
+          href: "/departments",
+          label: "Departments",
+          icon: BriefcaseBusiness
+        },
+        {
+          href: "/jobs",
+          label: "Jobs",
+          icon: SquareUserRound
+        },
+        
       ]
     },
     {

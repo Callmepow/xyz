@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+// Model for Area
+model Area {
+  id    Int     @id @default(autoincrement())
+  name  String
+  branches Branch[] // One-to-many relationship with Branch
+  users User[]
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+// Model for Branch
+model Branch {
+  id      Int    @id @default(autoincrement())
+  name    String
+  areaId  Int
+  area    Area   @relation(fields: [areaId], references: [id]) // Defines the relation
+  users User[]
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+// Model for Department
+model Department {
+  id    Int     @id @default(autoincrement())
+  name  String
+  jobs Job[] // One-to-many relationship with Branch
+  users User[]
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+// Model for Job
+model Job {
+  id      Int    @id @default(autoincrement())
+  name    String
+  departmentId  Int
+  department    Department   @relation(fields: [departmentId], references: [id]) 
+  users User[]
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+// Model for User
+model User {
+  id String @id @default(cuid())
+  username String? @unique
+  name String
+  nip String @unique
+  email  String? @unique
+  phone Int?
+  address String?
+  photo String?
+  gender Gender? 
+  password String
+  areaId Int
+  area Area @relation(fields: [areaId], references: [id])
+  branchId Int
+  branch Branch @relation(fields: [branchId], references: [id])
+  departmentId Int
+  department Department @relation(fields: [departmentId], references: [id])
+  jobId Int
+  job Job @relation(fields: [jobId], references: [id])
+  role Role @default(USER)
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
